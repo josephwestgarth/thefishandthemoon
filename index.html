@@ -276,8 +276,9 @@ footer a:hover { color: var(--ink); }
 .eye:focus-visible { outline: 2px solid var(--w-ink); outline-offset: 6px; }
 .eye svg { width: 100%; height: 100%; display: block; overflow: visible; }
 #lash { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
-/* Halftone: a fixed layer of dots behind everything, drawn once per screen size. */
-#halftone { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+/* Halftone: lives inside the watcher's box, clipped at its border, and reacts to the pointer. */
+.watcher { position: relative; overflow: hidden; isolation: isolate; }
+#halftone { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
 .w-copy { display: grid; gap: 12px; justify-items: center; max-width: 44ch; }
 .w-copy .label { color: var(--w-mute); }
 .w-copy h3 { font-family: var(--display); font-weight: 400; font-size: clamp(26px, 3.6vw, 36px); line-height: 1.15; letter-spacing: -.015em; margin: 0; min-height: 1.15em; text-wrap: balance; }
@@ -295,7 +296,6 @@ footer a:hover { color: var(--ink); }
 </head>
 <body>
 
-<canvas id="halftone" aria-hidden="true"></canvas>
 <div class="wrap">
   <header class="top">
     <a class="mini" href="/"><span aria-hidden="true"><svg viewBox="0 0 100 100"><mask id="mk1"><circle cx="50" cy="50" r="34" fill="#fff"/><rect x="0" y="37" width="100" height="9" fill="#000"/></mask><circle cx="50" cy="50" r="34" fill="currentColor" mask="url(#mk1)"/></svg></span>The Fish and the Moon</a>
@@ -331,6 +331,7 @@ footer a:hover { color: var(--ink); }
 
     <section class="home-map" id="theories">
       <div class="watcher" id="watcher">
+        <canvas id="halftone" aria-hidden="true"></canvas>
         <div class="eye" id="eye" role="button" tabindex="0" aria-label="The watcher. Press it.">
           <svg viewBox="0 0 100 100" aria-hidden="true"><defs><mask id="mk-eye"><circle cx="50" cy="50" r="34" fill="#fff"/><rect id="eye-slot" x="0" y="37" width="100" height="9" fill="#000"/><ellipse id="lid-top" cx="50" cy="-34" rx="74" ry="40" fill="#000"/><ellipse id="lid-bot" cx="50" cy="134" rx="74" ry="40" fill="#000"/></mask></defs><circle cx="50" cy="50" r="34" fill="currentColor" mask="url(#mk-eye)"/><path id="lash" d="M16 60 Q50 66 84 60" opacity="0"/></svg>
         </div>
@@ -741,29 +742,58 @@ if (!SETTINGS.published) {
 })();
 
 
-/* ---------- Halftone gradient across the page ---------- */
+/* ---------- Halftone inside the watcher's box: dots swell and part around the pointer; a tap sends a ripple ---------- */
 (function () {
-  const cv = document.getElementById("halftone"); if (!cv) return;
-  function draw() {
-    const w = innerWidth, h = innerHeight, d = Math.min(2, devicePixelRatio || 1);
-    cv.width = w * d; cv.height = h * d;
-    const c = cv.getContext("2d"); c.setTransform(d, 0, 0, d, 0, 0); c.clearRect(0, 0, w, h);
-    c.fillStyle = "#0b0b0c"; c.globalAlpha = .2;
-    const step = 8, maxR = step * .46, diag = Math.hypot(w, h);
-    for (let y = 0; y < h + step; y += step) {
-      const row = Math.round(y / step);
-      for (let x = (row % 2) * step / 2; x < w + step; x += step) {
-        // Strongest in the bottom-right corner, fading out across the page.
-        const t = 1 - Math.hypot(w - x, h - y) / (diag * .7);
-        if (t <= 0) continue;
-        const r = maxR * Math.pow(t, 1.8);
-        if (r < .35) continue;
-        c.beginPath(); c.arc(x, y, r, 0, Math.PI * 2); c.fill();
+  const box = document.getElementById("watcher"), cv = document.getElementById("halftone"); if (!box || !cv) return;
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const c = cv.getContext("2d"), STEP = 10;
+  let W = 0, H = 0, dots = [], px = -1e4, py = -1e4, ripples = [], live = false, settle = 0;
+  function build() {
+    const r = box.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1);
+    W = r.width; H = r.height; cv.width = W * d; cv.height = H * d; c.setTransform(d, 0, 0, d, 0, 0);
+    dots = []; const diag = Math.hypot(W, H);
+    for (let y = STEP / 2, row = 0; y < H; y += STEP, row++)
+      for (let x = (row % 2 ? STEP : STEP / 2); x < W; x += STEP) {
+        // Base size: strongest in the bottom-right corner, fading towards the top left.
+        const t = Math.max(0, 1 - Math.hypot(W - x, H - y) / (diag * .85));
+        dots.push({ x, y, b: Math.pow(t, 1.6) });
       }
-    }
+    settle = 2; draw(performance.now());
   }
-  let timer; addEventListener("resize", () => { clearTimeout(timer); timer = setTimeout(draw, 120); });
-  draw();
+  function draw(now) {
+    c.clearRect(0, 0, W, H); c.fillStyle = "#0b0b0c";
+    ripples = ripples.filter(r => now - r.t < 1600);
+    const maxR = STEP * .48;
+    for (const p of dots) {
+      let k = p.b, ox = 0, oy = 0;
+      const dx = p.x - px, dy = p.y - py, dist = Math.hypot(dx, dy);
+      if (dist < 140) {                     // swell and part around the pointer
+        const f = 1 - dist / 140, e = f * f;
+        k = Math.min(1, k + e * .9);
+        if (dist > 0.1) { ox = dx / dist * e * 7; oy = dy / dist * e * 7; }
+      }
+      for (const r of ripples) {            // expanding ring from a tap
+        const age = (now - r.t) / 1600, ring = age * Math.max(W, H) * .9, band = Math.abs(Math.hypot(p.x - r.x, p.y - r.y) - ring);
+        if (band < 26) k = Math.min(1, k + (1 - band / 26) * (1 - age) * .8);
+      }
+      const rad = maxR * k;
+      if (rad < .3) continue;
+      c.globalAlpha = .16 + .5 * k;
+      c.beginPath(); c.arc(p.x + ox, p.y + oy, rad, 0, Math.PI * 2); c.fill();
+    }
+    c.globalAlpha = 1;
+  }
+  function loop(now) {
+    if (live && (ripples.length || settle > 0)) { draw(now); if (!ripples.length) settle--; }
+    requestAnimationFrame(loop);
+  }
+  function at(e) { const r = box.getBoundingClientRect(); px = e.clientX - r.left; py = e.clientY - r.top; settle = 2; }
+  box.addEventListener("pointermove", at, { passive: true });
+  box.addEventListener("pointerleave", () => { px = py = -1e4; settle = 2; });
+  box.addEventListener("pointerdown", e => { at(e); if (!reduce) ripples.push({ x: px, y: py, t: performance.now() }); }, { passive: true });
+  new IntersectionObserver(es => { live = es[0].isIntersecting; settle = 2; }).observe(box);
+  let timer; addEventListener("resize", () => { clearTimeout(timer); timer = setTimeout(build, 120); });
+  build(); requestAnimationFrame(loop);
 })();
 
 /* ---------- Hidden page: type "moon" anywhere, or tap the small logo 5 times ---------- */
