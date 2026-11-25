@@ -268,6 +268,41 @@ a.mini { color: var(--ink); text-decoration: none; }
 .field iframe { width: 100%; height: 52px; border: 0; display: block; background: transparent; }
 footer a { color: inherit; text-decoration: none; }
 footer a:hover { color: var(--ink); }
+
+/* ---------- Waiting room: the watcher (shown until Theory 001 is published) ---------- */
+.watcher { --w-bg: #fafafa; --w-ink: #0b0b0c; --w-mute: #6b6b70; --w-dot: #d6d6da;
+  border: 1px solid var(--w-ink); background-color: var(--w-bg); color: var(--w-ink);
+  background-image: radial-gradient(var(--w-dot) 1px, transparent 1.2px); background-size: 36px 36px; background-position: 18px 18px;
+  display: grid; justify-items: center; align-content: center; gap: 28px; min-height: 520px; padding: 56px 20px; text-align: center; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.night .watcher { --w-bg: #050506; --w-ink: #f2f2f3; --w-mute: #84848b; --w-dot: #1d1d21; }
+.eye { width: 168px; height: 168px; cursor: pointer; color: var(--w-ink); border-radius: 50%; -webkit-tap-highlight-color: transparent; }
+.eye:focus-visible { outline: 2px solid var(--w-ink); outline-offset: 6px; }
+.eye svg { width: 100%; height: 100%; display: block; overflow: visible; }
+#eye-lid { transform-box: fill-box; transform-origin: center; transition: transform .09s ease-in; }
+#eye-lid.shut { transform: scaleY(.06); }
+.w-copy { display: grid; gap: 12px; justify-items: center; max-width: 44ch; }
+.w-copy .label { color: var(--w-mute); }
+.w-copy h3 { font-family: var(--display); font-weight: 400; font-size: clamp(26px, 3.6vw, 36px); line-height: 1.15; letter-spacing: -.015em; margin: 0; min-height: 1.15em; text-wrap: balance; }
+.w-copy p { margin: 0; color: var(--w-mute); }
+.w-chip { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--w-ink); text-decoration: none; border: 1px solid var(--w-ink); padding: 9px 13px; margin-top: 6px; }
+.w-chip:hover { background: var(--w-ink); color: var(--w-bg); }
+@media (max-width: 520px) { .watcher { min-height: 460px; } .eye { width: 140px; height: 140px; } }
+
+/* ---------- Title unlock ---------- */
+.unlock { display: grid; gap: 12px; padding: 22px 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--rule); margin-top: 28px; }
+.unlock .t { font-family: var(--display); font-size: clamp(22px, 2.8vw, 30px); line-height: 1.35; margin: 0; display: flex; flex-wrap: wrap; gap: .1em .32em; }
+.unlock .bar { background: var(--ink); color: transparent; border-radius: 1px; }
+.unlock .w { animation: surface .9s ease both; }
+@keyframes surface { from { opacity: 0; filter: blur(6px); } to { opacity: 1; filter: none; } }
+.unlock-meter { height: 2px; background: var(--rule); position: relative; }
+.unlock-meter i { position: absolute; inset: 0 auto 0 0; background: var(--ink); }
+
+/* ---------- Hidden page ---------- */
+.moon-page { max-width: 640px; margin: 0 auto; padding-block: 96px 120px; display: grid; gap: 26px; justify-items: start; }
+.moon-page .full { width: 120px; height: 120px; color: var(--ink); }
+.moon-page h1 { font-size: clamp(32px, 5.4vw, 52px); text-transform: none; line-height: 1.08; letter-spacing: -.025em; text-wrap: balance; }
+.moon-page p { margin: 0; color: var(--mute); max-width: 46ch; }
+@media (prefers-reduced-motion: reduce) { #eye-lid, .unlock .w { transition: none; animation: none; } }
 </style>
 </head>
 <body>
@@ -306,6 +341,23 @@ footer a:hover { color: var(--ink); }
     </section>
 
     <section class="home-map" id="theories">
+      <div class="watcher" id="watcher">
+        <div class="eye" id="eye" role="button" tabindex="0" aria-label="The watcher. Press it.">
+          <svg viewBox="0 0 100 100" aria-hidden="true"><defs><mask id="mk-eye"><circle cx="50" cy="50" r="34" fill="#fff"/><rect id="eye-slot" x="0" y="37" width="100" height="9" fill="#000"/></mask></defs><g id="eye-lid"><circle cx="50" cy="50" r="34" fill="currentColor" mask="url(#mk-eye)"/></g></svg>
+        </div>
+        <div class="w-copy">
+          <span class="label" id="w-status">Status · Observing</span>
+          <h3 id="w-line" aria-live="polite">Something is already watching.</h3>
+          <p id="w-sub">Theory 001 is coming. Click the eye.</p>
+          <a class="w-chip" href="/#subscribe">Be told first</a>
+        </div>
+      </div>
+      <div class="unlock" id="unlock">
+        <span class="label" id="unlock-label">Theory 001 · Title locked</span>
+        <p class="t" id="unlock-title"></p>
+        <div class="unlock-meter" aria-hidden="true"><i id="unlock-fill"></i></div>
+        <span class="label" id="unlock-note"></span>
+      </div>
       <section class="map" aria-labelledby="map-title">
         <div class="map-head">
           <div><span class="label">The theory map</span><h3 id="map-title">Every theory, and how they connect</h3></div>
@@ -417,6 +469,15 @@ footer a:hover { color: var(--ink); }
   </article>
 
 
+  <article class="moon-page view" id="moon-view" hidden>
+    <svg class="full" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="34" fill="currentColor"/></svg>
+    <span class="label">You weren't meant to find this</span>
+    <h1>The fish never knew the moon. But it always felt the pull.</h1>
+    <p>Theory 001 is close. You found the door before anyone told you it was here, which is exactly the kind of person this is for.</p>
+    <p>Keep it to yourself. Or don't.</p>
+    <a class="label" href="/" style="color:var(--ink)">← Back to the surface</a>
+  </article>
+
   <footer>
     <span class="label">The Fish and the Moon · <a href="https://www.tiktok.com/@thefishandthemoon" rel="noopener">@thefishandthemoon</a></span>
     <span class="label">Just a theory</span>
@@ -428,6 +489,14 @@ footer a:hover { color: var(--ink); }
    SETTINGS. These are the only lines you ever need to change.
    ===================================================================== */
 const SETTINGS = {
+  // false = the waiting room (the watcher) shows and Theory 001 stays hidden.
+  // true  = Theory 001, the theory map and the "Latest" link go live.
+  published: false,
+
+  // Your Beehiiv subscriber count. One word of Theory 001's title unlocks per 25.
+  subscribers: 0,
+  wordsPer: 25,
+
   // Optional, for the shared "readers' average" on the confidence slider.
   // Leave empty and the slider still works, just without the average.
   supabaseUrl: "",
@@ -502,21 +571,15 @@ window.FM_resize = null;
 /* ---------- Theory map (force-directed graph) ---------- */
 (function () {
   const T = window.FM_T = [
-    { id: "t001", n: "001", title: "We won't notice when AI becomes smarter than us.", live: true, tags: ["ai", "perception"] },
-    { id: "t002", n: "002", title: "Consciousness might be a user interface, not a fact.", tags: ["consciousness", "perception"] },
-    { id: "t003", n: "003", title: "Work was never really about the work.", tags: ["work", "meaning"] },
-    { id: "t004", n: "004", title: "The last human skill will be wanting things.", tags: ["ai", "meaning", "work"] },
-    { id: "t005", n: "005", title: "We'll outsource our memories before our jobs.", tags: ["ai", "memory"] },
-    { id: "t006", n: "006", title: "Meaning doesn't survive abundance.", tags: ["meaning"] },
-    { id: "t007", n: "007", title: "An AI won't need to lie to mislead us.", tags: ["ai", "perception"] },
-    { id: "t008", n: "008", title: "A machine that feels nothing can still matter morally.", tags: ["consciousness", "ai"] }
+    { id: "t001", n: "001", title: "We won't notice when AI becomes smarter than us.", live: true, tags: ["ai", "perception"] }
   ];
-  const TAGS = window.FM_TAGS = { ai: "AI", consciousness: "Consciousness", work: "Work", meaning: "Meaning", perception: "Perception", memory: "Memory" };
-  const LINKS = window.FM_LINKS = [["t001","t007"],["t001","t004"],["t004","t003"],["t002","t007"],["t005","t001"],["t006","t003"],["t006","t004"],["t002","t008"]];
+  const ALL_TAGS = { ai: "AI", consciousness: "Consciousness", work: "Work", meaning: "Meaning", perception: "Perception", memory: "Memory" };
+  const TAGS = window.FM_TAGS = Object.fromEntries(Object.entries(ALL_TAGS).filter(([k]) => T.some(t => t.tags.includes(k))));
+  const LINKS = window.FM_LINKS = [["t001","t007"],["t001","t004"],["t004","t003"],["t002","t007"],["t005","t001"],["t006","t003"],["t006","t004"],["t002","t008"]].filter(([a, b]) => T.some(t => t.id === a) && T.some(t => t.id === b));
   const nodes = [], edges = [];
   const byId = {};
   T.forEach((t, i) => { const a = i / T.length * Math.PI * 2; const nd = { ...t, kind: "theory", x: Math.cos(a) * 140, y: Math.sin(a) * 140, vx: 0, vy: 0, r: t.live ? 9 : 6 }; nodes.push(nd); byId[t.id] = nd; });
-  Object.entries(TAGS).forEach(([k, label], i) => { const a = i / 6 * Math.PI * 2 + .4; const nd = { id: "tag-" + k, kind: "tag", title: label, x: Math.cos(a) * 60, y: Math.sin(a) * 60, vx: 0, vy: 0, r: 4.5 }; nodes.push(nd); byId[nd.id] = nd; });
+  Object.entries(TAGS).forEach(([k, label], i) => { const a = i / Object.keys(TAGS).length * Math.PI * 2 + .4; const nd = { id: "tag-" + k, kind: "tag", title: label, x: Math.cos(a) * 60, y: Math.sin(a) * 60, vx: 0, vy: 0, r: 4.5 }; nodes.push(nd); byId[nd.id] = nd; });
   T.forEach(t => t.tags.forEach(g => edges.push({ a: byId[t.id], b: byId["tag-" + g], len: 70, weak: true })));
   LINKS.forEach(([a, b]) => edges.push({ a: byId[a], b: byId[b], len: 110 }));
 
@@ -589,7 +652,7 @@ window.FM_resize = null;
     lab.className = "label";
     if (n.kind === "tag") {
       const list = T.filter(t => t.tags.includes(n.id.slice(4)));
-      lab.textContent = "Topic"; st.textContent = n.title; p.textContent = list.length + " theories: " + list.map(t => t.n).join(", ") + ".";
+      lab.textContent = "Topic"; st.textContent = n.title; p.textContent = list.length + (list.length === 1 ? " theory: " : " theories: ") + list.map(t => t.n).join(", ") + ".";
     } else {
       lab.textContent = "Theory " + n.n + (n.live ? " · Published 25 Nov 2026" : " · Coming soon"); st.textContent = n.title; p.textContent = "Click to open.";
     }
@@ -608,6 +671,92 @@ window.FM_resize = null;
 })();
 
 
+
+
+/* ---------- After dark (midnight to 5am, visitor's own time). Test with ?night=1 ---------- */
+const NIGHT = (function () {
+  const q = new URLSearchParams(location.search).get("night");
+  if (q !== null) return q !== "0";
+  return new Date().getHours() < 5;
+})();
+if (NIGHT) { document.documentElement.classList.add("night"); document.documentElement.setAttribute("data-theme", "dark"); }
+
+/* ---------- Pre-launch: hide everything that isn't published yet ---------- */
+if (!SETTINGS.published) {
+  document.querySelector(".home-map .map").hidden = true;
+  document.querySelector(".latest-row").hidden = true;
+  document.querySelector('nav.links a[data-view="issue"]').hidden = true;
+} else {
+  document.getElementById("watcher").hidden = true;
+  document.getElementById("unlock").hidden = true;
+}
+
+/* ---------- The watcher ---------- */
+(function () {
+  const eye = document.getElementById("eye"), slot = document.getElementById("eye-slot"), lid = document.getElementById("eye-lid");
+  const status = document.getElementById("w-status"), line = document.getElementById("w-line"), sub = document.getElementById("w-sub");
+  if (!eye) return;
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const DAY = ["Not yet.", "You noticed. Most won't.", "It's closer than it looks.", "Watch the water.", "It already knows you're here.", "Theory 001. Soon.", "Type moon."];
+  const DARK = ["It never sleeps.", "The tide moves fastest at night.", "You'll remember you were here first.", "Go to sleep. It won't.", "Look up.", "Nobody else is awake.", "Type moon."];
+  const lines = NIGHT ? DARK : DAY;
+  if (NIGHT) { status.textContent = "Status · Awake"; line.textContent = "You're up late. So is it."; sub.textContent = "Nobody else is here. Click the eye."; }
+  let clicks = 0, y = 37, ty = 37, hgt = 9, th = 9, near = false;
+  function aim(x, py) {
+    const r = eye.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    ty = 37 + Math.max(-1, Math.min(1, (py - cy) / 260)) * 17;
+    const d = Math.hypot(x - cx, py - cy), n = d < r.width * .9;
+    th = n ? 3.5 : 9;
+    if (n !== near) { near = n; status.textContent = n ? "Status · You're close" : (NIGHT ? "Status · Awake" : "Status · Observing"); }
+  }
+  document.addEventListener("pointermove", e => aim(e.clientX, e.clientY), { passive: true });
+  document.addEventListener("pointerdown", e => aim(e.clientX, e.clientY), { passive: true });
+  function blink(ms) { lid.classList.add("shut"); setTimeout(() => lid.classList.remove("shut"), ms || 140); }
+  function poke() { line.textContent = lines[clicks % lines.length]; clicks++; blink(160); }
+  eye.addEventListener("click", poke);
+  eye.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); poke(); } });
+  (function idle() { setTimeout(() => { if (!document.hidden) blink(); idle(); }, 2600 + Math.random() * 4200); })();
+  function frame() {
+    y += (ty - y) * (reduce ? 1 : .12); hgt += (th - hgt) * (reduce ? 1 : .2);
+    slot.setAttribute("y", (y + 4.5 - hgt / 2).toFixed(2)); slot.setAttribute("height", hgt.toFixed(2));
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+
+/* ---------- Title unlock: one word per SETTINGS.wordsPer subscribers ---------- */
+(function () {
+  const el = document.getElementById("unlock-title"); if (!el) return;
+  const words = atob("V2Ugd29uJ3Qgbm90aWNlIHdoZW4gQUkgYmVjb21lcyBzbWFydGVyIHRoYW4gdXMu").split(" ");
+  const per = SETTINGS.wordsPer || 25, open = Math.min(words.length, Math.floor((SETTINGS.subscribers || 0) / per));
+  words.forEach((w, i) => {
+    const sp = document.createElement("span");
+    if (i < open) { sp.className = "w"; sp.textContent = w; sp.style.animationDelay = (i * .12) + "s"; }
+    else { sp.className = "bar"; sp.textContent = "x".repeat(Math.max(2, w.length)); sp.setAttribute("aria-hidden", "true"); }
+    el.appendChild(sp);
+  });
+  el.setAttribute("aria-label", open ? words.slice(0, open).join(" ") + ", and " + (words.length - open) + " hidden words" : "Hidden title");
+  document.getElementById("unlock-fill").style.width = (open / words.length * 100) + "%";
+  document.getElementById("unlock-label").textContent = open === words.length ? "Theory 001 · Title unlocked" : "Theory 001 · Title locked";
+  document.getElementById("unlock-note").textContent = open === words.length ? "Every word is out. The theory itself comes next." :
+    open + " of " + words.length + " words unlocked · The next word appears at " + ((open + 1) * per) + " subscribers";
+})();
+
+/* ---------- Hidden page: type "moon" anywhere, or tap the small logo 5 times ---------- */
+(function () {
+  let buf = "";
+  document.addEventListener("keydown", e => {
+    const t = e.target; if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+    if (e.key.length !== 1) return;
+    buf = (buf + e.key.toLowerCase()).slice(-4);
+    if (buf === "moon") { buf = ""; go("/moon"); }
+  });
+  let taps = [], mini = document.querySelector("header .mini");
+  mini.addEventListener("click", e => {
+    const now = Date.now(); taps = taps.filter(t => now - t < 2500); taps.push(now);
+    if (taps.length >= 5) { e.preventDefault(); e.stopPropagation(); taps = []; go("/moon"); }
+  }, true);
+})();
 
 /* ---------- Signup ----------
    Once the beehiiv code is pasted into #beehiiv-slot, it replaces the placeholder box below. */
@@ -634,6 +783,7 @@ function relatedFor(id) {
 }
 function fillRelated(ul, id) {
   ul.textContent = "";
+  ul.closest("section").hidden = !relatedFor(id).length;
   relatedFor(id).forEach(t => {
     const li = document.createElement("li"), a = document.createElement("a");
     a.href = "/theory-" + t.n;
@@ -650,10 +800,11 @@ function route() {
   if (old) history.replaceState(null, "", "/" + old[1]);
   const p = location.pathname.replace(/\/+$/, "").replace(/^\//, "").replace(/\.html$/, "");
   const h = location.hash.replace("#", "");
-  const views = { home: "home-view", issue: "issue-view", soon: "soon-view" };
+  const views = { home: "home-view", issue: "issue-view", soon: "soon-view", moon: "moon-view" };
   let show = "home";
-  const m = p.match(/^theory-(\d{3})$/);
-  if (m) {
+  const m = SETTINGS.published ? p.match(/^theory-(\d{3})$/) : null;
+  if (p === "moon") { show = "moon"; document.title = "· · ·"; }
+  else if (m) {
     const t = FM_T.find(x => x.n === m[1]);
     if (t && t.live) { show = "issue"; fillRelated(document.getElementById("related-list"), t.id); document.title = "Theory " + t.n + ": " + t.title.replace(/\.$/, "") + " · The Fish and the Moon"; }
     else if (t) {
@@ -670,6 +821,7 @@ function route() {
   document.querySelectorAll("nav.links a").forEach(a => a.toggleAttribute("aria-current", a.dataset.view === show));
   if (show === "home") {
     document.title = "The Fish and the Moon";
+    if (p && p !== "moon") history.replaceState(null, "", "/" + location.hash);
     if (FM_resize) FM_resize();
     const target = h && document.getElementById(h);
     if (target) target.scrollIntoView(); else window.scrollTo(0, 0);
