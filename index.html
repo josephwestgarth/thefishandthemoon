@@ -1,0 +1,684 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Fish and the Moon</title>
+<meta name="description" content="Ideas before they're obvious. A weekly letter on intelligence, meaning and the future we're building.">
+<meta property="og:title" content="The Fish and the Moon">
+<meta property="og:description" content="Ideas before they're obvious. A weekly letter on intelligence, meaning and the future we're building.">
+<meta property="og:image" content="https://thefishandthemoon.com/share.png">
+<meta property="og:url" content="https://thefishandthemoon.com/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Font: Inter Tight (free, Google Fonts) stands in for Alliance No.2, which needs a paid web licence. */
+/* Layout: a live site in one stark column. Home = mark, one line, signup, theory map as centrepiece. Theory pages = essay column. Email = mock inbox preview. */
+:root {
+  --paper: #fafafa;
+  --ink: #0b0b0c;
+  --mute: #6b6b70;
+  --rule: #dcdcdf;
+  --panel: #f0f0f2;
+  --display: "Inter Tight", "Helvetica Neue", Arial, sans-serif;
+  --body: "Inter Tight", "Helvetica Neue", Arial, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --paper: #0a0a0b; --ink: #f2f2f3; --mute: #8e8e94; --rule: #26262a; --panel: #141416; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --paper: #0a0a0b; --ink: #f2f2f3; --mute: #8e8e94; --rule: #26262a; --panel: #141416; color-scheme: dark; }
+
+* { box-sizing: border-box; }
+body {
+  background: var(--paper); color: var(--ink);
+  font-family: var(--body); font-size: 16px; line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1040px; margin: 0 auto; }
+.label { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--mute); }
+
+header.top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding-block: 24px; border-bottom: 1px solid var(--rule); }
+header.top .mini { display: flex; align-items: center; gap: 10px; font-family: var(--display); font-size: 13px; letter-spacing: .12em; text-transform: uppercase; }
+header.top .mini svg { width: 24px; height: 24px; display: block; }
+
+.hero { display: grid; grid-template-columns: minmax(0, 1fr); gap: 36px; padding-block: 88px 96px; }
+.hero-mark { width: 104px; height: 104px; color: var(--ink); }
+.hero-mark svg { width: 100%; height: 100%; display: block; }
+h1 {
+  font-family: var(--display); font-weight: 400;
+  font-size: clamp(40px, 8.6vw, 100px); line-height: .95; letter-spacing: -.03em;
+  margin: 0; text-transform: uppercase; text-wrap: balance;
+}
+.bio { display: grid; gap: 6px; }
+.bio .lead { text-wrap: balance; }
+.bio .lead { font-family: var(--display); font-size: clamp(22px, 3vw, 30px); line-height: 1.2; margin: 0; }
+.bio .sub { margin: 0; color: var(--mute); font-size: 18px; }
+.pillars { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 0; padding: 0; list-style: none;
+  font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
+.pillars li::before { content: ""; display: inline-block; width: 6px; height: 6px; background: var(--ink); border-radius: 50%; margin-right: 10px; vertical-align: middle; transform: translateY(-1px); }
+
+.signup { max-width: 560px; display: grid; gap: 12px; padding-top: 12px; border-top: 1px solid var(--rule); }
+.signup p { margin: 0; color: var(--mute); max-width: 48ch; }
+.field { display: flex; border: 1.5px solid var(--ink); }
+.field input { flex: 1; min-width: 0; border: 0; background: transparent; color: var(--ink); font: inherit; padding: 14px 16px; outline: none; }
+.field input::placeholder { color: var(--mute); }
+.field:focus-within { outline: 2px solid var(--ink); outline-offset: 3px; }
+.field button {
+  border: 0; background: var(--ink); color: var(--paper); cursor: pointer;
+  font-family: var(--display); font-size: 13px; letter-spacing: .12em; text-transform: uppercase; padding: 0 22px;
+}
+.field button:hover { opacity: .85; }
+.status { font-family: var(--mono); font-size: 12px; min-height: 1.4em; margin: 0; }
+.sr { position: absolute; left: -9999px; }
+
+
+.btn { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; border: 1px solid var(--ink); background: transparent; color: var(--ink); padding: 9px 14px; cursor: pointer; }
+.btn:focus-visible, .field button:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.btn[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+
+footer { border-top: 1px solid var(--rule); padding-block: 28px 40px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-mark svg { transition: opacity .25s ease, transform .25s ease; }
+  .hero-mark.swap svg { opacity: 0; transform: translateY(6px); }
+}
+
+a.mini { color: var(--ink); text-decoration: none; }
+
+.issue { max-width: 680px; margin: 0 auto; padding-block: 56px 80px; }
+.issue-mast { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding-bottom: 20px; border-bottom: 1px solid var(--ink); }
+.issue-mast .m { display: flex; align-items: center; gap: 12px; }
+.issue-mast .m svg { width: 28px; height: 28px; display: block; }
+.issue h1.t { font-size: clamp(34px, 6.4vw, 60px); line-height: 1.02; text-transform: none; letter-spacing: -.025em; margin: 40px 0 14px; }
+.issue .num { display: block; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--mute); margin-top: 40px; }
+.issue .dek { color: var(--mute); font-size: 18px; margin: 0 0 8px; }
+.issue h2 { display: flex; gap: 14px; align-items: baseline; font-family: var(--mono); font-weight: 400; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; margin: 48px 0 14px; padding-top: 14px; border-top: 1px solid var(--rule); }
+.issue h2 span { color: var(--mute); }
+.issue p { font-size: 18px; line-height: 1.65; margin: 0 0 16px; max-width: 64ch; }
+.issue p.pull { font-family: var(--display); font-size: clamp(22px, 3.2vw, 28px); line-height: 1.3; margin: 28px 0; padding-left: 20px; border-left: 3px solid var(--ink); }
+.issue .ask { margin-top: 48px; padding: 28px; background: var(--ink); color: var(--paper); }
+.issue .ask .label { color: var(--paper); opacity: .7; }
+.issue .ask p { font-family: var(--display); font-size: clamp(22px, 3vw, 28px); line-height: 1.3; margin: 10px 0 0; }
+.issue .sign { margin-top: 40px; font-family: var(--display); font-size: 22px; }
+.issue .end { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--rule); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.issue .end a { color: var(--ink); }
+
+.conf { margin-top: 48px; padding: 28px; border: 1.5px solid var(--ink); display: grid; gap: 18px; }
+.conf h3 { font-family: var(--display); font-weight: 400; font-size: clamp(20px, 2.6vw, 24px); line-height: 1.3; margin: 0; }
+.conf-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 20px; align-items: center; }
+.conf-val { font-family: var(--display); font-size: 44px; line-height: 1; font-variant-numeric: tabular-nums; min-width: 3.2ch; text-align: right; }
+.conf input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 28px; background: transparent; cursor: pointer; }
+.conf input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--ink); }
+.conf input[type=range]::-moz-range-track { height: 2px; background: var(--ink); }
+.conf input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; background: var(--ink); margin-top: -10px; border: 0; }
+.conf input[type=range]::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: var(--ink); border: 0; }
+.conf input[type=range]:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
+.conf-scale { display: flex; justify-content: space-between; }
+.conf-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.crowd { display: grid; gap: 10px; padding-top: 18px; border-top: 1px solid var(--rule); }
+.crowd-bar { position: relative; height: 34px; border-bottom: 1px solid var(--ink); }
+.crowd-bar .tick { position: absolute; bottom: 0; width: 2px; background: var(--mute); transform: translateX(-1px); }
+.crowd-bar .avg { position: absolute; bottom: 0; height: 34px; width: 3px; background: var(--ink); transform: translateX(-1.5px); }
+.crowd-bar .you { position: absolute; bottom: -7px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--ink); background: var(--paper); transform: translateX(-6px); }
+.crowd p.big { font-family: var(--display); font-size: 22px; margin: 0; }
+.crowd p { margin: 0; font-size: 16px; }
+
+.map { margin-top: 64px; }
+.map-head { display: flex; justify-content: space-between; align-items: end; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.map-head h3 { font-family: var(--display); font-weight: 400; font-size: 28px; margin: 6px 0 0; }
+.map-frame { position: relative; border: 1px solid var(--ink); background: var(--paper); height: 460px; overflow: hidden; touch-action: none; }
+.map-frame canvas { display: block; width: 100%; height: 100%; cursor: grab; }
+.map-frame canvas.dragging { cursor: grabbing; }
+.map-tools { position: absolute; top: 10px; right: 10px; display: flex; gap: 6px; }
+.map-tools button { width: 32px; height: 32px; border: 1px solid var(--ink); background: var(--paper); color: var(--ink); font-family: var(--mono); font-size: 15px; cursor: pointer; padding: 0; }
+.map-tools button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.map-legend { position: absolute; left: 12px; bottom: 10px; display: flex; gap: 16px; flex-wrap: wrap; }
+.map-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.map-legend i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--ink); }
+.map-legend i.tag { background: transparent; border: 1.5px solid var(--ink); }
+.map-card { margin-top: 12px; padding: 18px 20px; border: 1px solid var(--rule); display: grid; gap: 6px; min-height: 92px; }
+.map-card strong { font-family: var(--display); font-weight: 400; font-size: 20px; }
+.map-card p { margin: 0; font-size: 15px; color: var(--mute); }
+.map-card button { justify-self: start; }
+
+
+.issue { max-width: 680px; margin: 0 auto; padding-block: 56px 80px; }
+.issue-mast { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding-bottom: 20px; border-bottom: 1px solid var(--ink); }
+.issue-mast .m { display: flex; align-items: center; gap: 12px; }
+.issue-mast .m svg { width: 28px; height: 28px; display: block; }
+.issue h1.t { font-size: clamp(34px, 6.4vw, 60px); line-height: 1.02; text-transform: none; letter-spacing: -.025em; margin: 40px 0 14px; }
+.issue .num { display: block; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--mute); margin-top: 40px; }
+.issue .dek { color: var(--mute); font-size: 18px; margin: 0 0 8px; }
+.issue h2 { display: flex; gap: 14px; align-items: baseline; font-family: var(--mono); font-weight: 400; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; margin: 48px 0 14px; padding-top: 14px; border-top: 1px solid var(--rule); }
+.issue h2 span { color: var(--mute); }
+.issue p { font-size: 18px; line-height: 1.65; margin: 0 0 16px; max-width: 64ch; }
+.issue p.pull { font-family: var(--display); font-size: clamp(22px, 3.2vw, 28px); line-height: 1.3; margin: 28px 0; padding-left: 20px; border-left: 3px solid var(--ink); }
+.issue .ask { margin-top: 48px; padding: 28px; background: var(--ink); color: var(--paper); }
+.issue .ask .label { color: var(--paper); opacity: .7; }
+.issue .ask p { font-family: var(--display); font-size: clamp(22px, 3vw, 28px); line-height: 1.3; margin: 10px 0 0; }
+.issue .sign { margin-top: 40px; font-family: var(--display); font-size: 22px; }
+.issue .end { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--rule); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.issue .end a { color: var(--ink); }
+
+
+.conf { margin-top: 48px; padding: 28px; border: 1.5px solid var(--ink); display: grid; gap: 18px; }
+.conf h3 { font-family: var(--display); font-weight: 400; font-size: clamp(20px, 2.6vw, 24px); line-height: 1.3; margin: 0; }
+.conf-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 20px; align-items: center; }
+.conf-val { font-family: var(--display); font-size: 44px; line-height: 1; font-variant-numeric: tabular-nums; min-width: 3.2ch; text-align: right; }
+.conf input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 28px; background: transparent; cursor: pointer; }
+.conf input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--ink); }
+.conf input[type=range]::-moz-range-track { height: 2px; background: var(--ink); }
+.conf input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; background: var(--ink); margin-top: -10px; border: 0; }
+.conf input[type=range]::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: var(--ink); border: 0; }
+.conf input[type=range]:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
+.conf-scale { display: flex; justify-content: space-between; }
+.conf-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.crowd { display: grid; gap: 10px; padding-top: 18px; border-top: 1px solid var(--rule); }
+.crowd-bar { position: relative; height: 34px; border-bottom: 1px solid var(--ink); }
+.crowd-bar .tick { position: absolute; bottom: 0; width: 2px; background: var(--mute); transform: translateX(-1px); }
+.crowd-bar .avg { position: absolute; bottom: 0; height: 34px; width: 3px; background: var(--ink); transform: translateX(-1.5px); }
+.crowd-bar .you { position: absolute; bottom: -7px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--ink); background: var(--paper); transform: translateX(-6px); }
+.crowd p.big { font-family: var(--display); font-size: 22px; margin: 0; }
+.crowd p { margin: 0; font-size: 16px; }
+
+.map { margin-top: 64px; }
+.map-head { display: flex; justify-content: space-between; align-items: end; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.map-head h3 { font-family: var(--display); font-weight: 400; font-size: 28px; margin: 6px 0 0; }
+.map-frame { position: relative; border: 1px solid var(--ink); background: var(--paper); height: 460px; overflow: hidden; touch-action: none; }
+.map-frame canvas { display: block; width: 100%; height: 100%; cursor: grab; }
+.map-frame canvas.dragging { cursor: grabbing; }
+.map-tools { position: absolute; top: 10px; right: 10px; display: flex; gap: 6px; }
+.map-tools button { width: 32px; height: 32px; border: 1px solid var(--ink); background: var(--paper); color: var(--ink); font-family: var(--mono); font-size: 15px; cursor: pointer; padding: 0; }
+.map-tools button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.map-legend { position: absolute; left: 12px; bottom: 10px; display: flex; gap: 16px; flex-wrap: wrap; }
+.map-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.map-legend i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--ink); }
+.map-legend i.tag { background: transparent; border: 1.5px solid var(--ink); }
+.map-card { margin-top: 12px; padding: 18px 20px; border: 1px solid var(--rule); display: grid; gap: 6px; min-height: 92px; }
+.map-card strong { font-family: var(--display); font-weight: 400; font-size: 20px; }
+.map-card p { margin: 0; font-size: 15px; color: var(--mute); }
+.map-card button { justify-self: start; }
+
+
+nav.links { display: flex; gap: 22px; flex-wrap: wrap; align-items: center; }
+nav.links a { color: var(--mute); text-decoration: none; }
+nav.links a:hover, nav.links a[aria-current="page"] { color: var(--ink); }
+a.mini { color: var(--ink); text-decoration: none; }
+.home-hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 48px; align-items: end; padding-block: 72px 56px; }
+@media (max-width: 820px) { .home-hero { grid-template-columns: minmax(0, 1fr); gap: 36px; padding-block: 48px 40px; } }
+.home-hero .left { display: grid; gap: 28px; }
+.home-hero h1 { font-size: clamp(40px, 7.4vw, 88px); }
+.home-hero .lead { font-family: var(--display); font-size: clamp(22px, 2.6vw, 28px); line-height: 1.25; margin: 0; max-width: 22ch; text-wrap: balance; }
+.home-hero .signup { border-top: 0; padding-top: 0; }
+.home-map { padding-block: 0 72px; }
+.home-map .map { margin-top: 0; }
+.latest-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; align-items: center; padding: 20px 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--rule); color: var(--ink); text-decoration: none; margin-top: 28px; }
+.latest-row strong { font-family: var(--display); font-weight: 400; font-size: clamp(20px, 2.4vw, 26px); display: block; margin-top: 4px; }
+.latest-row:hover strong { text-decoration: underline; text-underline-offset: 4px; }
+.latest-row .arrow { font-family: var(--mono); font-size: 20px; }
+
+.related { margin-top: 56px; }
+.related h3 { font-family: var(--mono); font-weight: 400; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; margin: 0 0 6px; }
+.related ul { list-style: none; margin: 0; padding: 0; }
+.related li a { display: grid; grid-template-columns: 4.5em minmax(0, 1fr) auto; gap: 12px; align-items: baseline; padding: 16px 0; border-bottom: 1px solid var(--rule); color: var(--ink); text-decoration: none; }
+.related li a:hover .t { text-decoration: underline; text-underline-offset: 3px; }
+.related .t { font-family: var(--display); font-size: 19px; }
+
+.soon { max-width: 680px; margin: 0 auto; padding-block: 72px 96px; display: grid; gap: 24px; }
+.soon h1 { font-size: clamp(34px, 6vw, 56px); text-transform: none; line-height: 1.05; letter-spacing: -.025em; }
+.soon .tags { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; border: 1px solid var(--ink); padding: 5px 9px; color: var(--ink); text-decoration: none; }
+.soon .blank { border: 1px dashed var(--mute); padding: 28px; display: grid; gap: 10px; }
+.soon .blank p { margin: 0; color: var(--mute); }
+
+.email-wrap { max-width: 760px; margin: 0 auto; padding-block: 48px 96px; display: grid; gap: 18px; }
+.client { border: 1px solid var(--rule); background: var(--panel); }
+.client-head { display: grid; gap: 4px; padding: 16px 20px; border-bottom: 1px solid var(--rule); font-size: 14px; }
+.client-head .row { display: grid; grid-template-columns: 4.5em minmax(0, 1fr); gap: 8px; }
+.client-head .k { color: var(--mute); }
+.client-body { padding: 32px 16px; }
+.mail { max-width: 560px; margin: 0 auto; background: #fff; color: #0b0b0c; padding: 40px 36px; display: grid; gap: 20px; }
+@media (max-width: 520px) { .mail { padding: 28px 20px; } }
+.mail .brand { display: flex; align-items: center; gap: 10px; font-family: var(--display); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; padding-bottom: 18px; border-bottom: 1px solid #0b0b0c; }
+.mail .brand svg { width: 22px; height: 22px; display: block; color: #0b0b0c; }
+.mail .lab { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #6b6b70; }
+.mail h2 { font-family: var(--display); font-weight: 400; font-size: 30px; line-height: 1.12; letter-spacing: -.02em; margin: 0; }
+.mail p { margin: 0; font-size: 17px; line-height: 1.6; }
+.mail .cta { justify-self: start; background: #0b0b0c; color: #fff; text-decoration: none; font-family: var(--display); font-size: 13px; letter-spacing: .12em; text-transform: uppercase; padding: 14px 22px; }
+.mail .foot { padding-top: 18px; border-top: 1px solid #dcdcdf; font-family: var(--mono); font-size: 11px; color: #6b6b70; line-height: 1.6; }
+.view[hidden] { display: none !important; }
+.signup { grid-template-columns: minmax(0, 1fr); }
+.field input { width: 100%; }
+.map-frame { height: 520px; }
+@media (max-width: 520px) { .map-frame { height: 420px; } .field button { padding: 0 14px; } }
+
+.field iframe { width: 100%; height: 52px; border: 0; display: block; background: transparent; }
+footer a { color: inherit; text-decoration: none; }
+footer a:hover { color: var(--ink); }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <a class="mini" href="/"><span aria-hidden="true"><svg viewBox="0 0 100 100"><mask id="mk1"><circle cx="50" cy="50" r="34" fill="#fff"/><rect x="0" y="37" width="100" height="9" fill="#000"/></mask><circle cx="50" cy="50" r="34" fill="currentColor" mask="url(#mk1)"/></svg></span>The Fish and the Moon</a>
+    <nav class="links" aria-label="Site">
+      <a class="label" href="/#theories" data-view="home">Theories</a>
+      <a class="label" href="/theory-001" data-view="issue">Latest</a>
+      <a class="label" href="/#subscribe" data-view="sub">Subscribe</a>
+    </nav>
+  </header>
+
+  <main class="view" id="home-view">
+    <section class="home-hero">
+      <div class="left">
+        <div class="hero-mark" aria-hidden="true"><svg viewBox="0 0 100 100"><mask id="mk2"><circle cx="50" cy="50" r="34" fill="#fff"/><rect x="0" y="37" width="100" height="9" fill="#000"/></mask><circle cx="50" cy="50" r="34" fill="currentColor" mask="url(#mk2)"/></svg></div>
+        <h1>The Fish and the&nbsp;Moon</h1>
+        <p class="lead">The fish never knew the moon. Original thoughts on what we can't yet see.</p>
+      </div>
+      <div class="signup" id="subscribe">
+        <span class="label">The newsletter</span>
+        <p>Ideas before they're obvious. A weekly letter on intelligence, meaning and the future we're building.</p>
+        <!-- ===== BEEHIIV FORM: paste the beehiiv embed code between these two lines ===== -->
+        <div id="beehiiv-slot"></div>
+        <!-- ===== END BEEHIIV FORM ===== -->
+        <form class="field" id="fallback-form" novalidate>
+          <label for="email" class="sr">Email address</label>
+          <input id="email" name="email" type="email" placeholder="you@example.com" autocomplete="email" required>
+          <button type="submit" id="subscribe-btn">Subscribe</button>
+        </form>
+        <span class="label">Free. Weekly. Unsubscribe anytime.</span>
+        <p class="status" id="status" role="status"></p>
+      </div>
+    </section>
+
+    <section class="home-map" id="theories">
+      <section class="map" aria-labelledby="map-title">
+        <div class="map-head">
+          <div><span class="label">The theory map</span><h3 id="map-title">Every theory, and how they connect</h3></div>
+          <span class="label">Drag · zoom · click a theory to open it</span>
+        </div>
+        <div class="map-frame" id="map-frame">
+          <canvas id="map" aria-label="Interactive graph of theories and the topics that link them"></canvas>
+          <div class="map-tools">
+            <button type="button" id="map-in" aria-label="Zoom in">+</button>
+            <button type="button" id="map-out" aria-label="Zoom out">−</button>
+            <button type="button" id="map-reset" aria-label="Reset view">⟲</button>
+          </div>
+          <div class="map-legend"><span class="label"><i></i>Theory</span><span class="label"><i class="tag"></i>Topic</span></div>
+        </div>
+        <div class="map-card" id="map-card" aria-live="polite">
+          <span class="label">Theory 001 · Latest</span>
+          <strong>We won't notice when AI becomes smarter than us.</strong>
+          <p>Hover over any point to preview it. Click to open.</p>
+        </div>
+      </section>
+      <a class="latest-row" href="/theory-001">
+        <span><span class="label">Latest theory · 001 · 25 Nov 2026</span><strong>We won't notice when AI becomes smarter than us.</strong></span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+    </section>
+  </main>
+
+  <article class="issue view" id="issue-view" hidden>
+    <div class="issue-mast">
+      <span class="m"><span aria-hidden="true"><svg viewBox="0 0 100 100"><mask id="mk3"><circle cx="50" cy="50" r="34" fill="#fff"/><rect x="0" y="37" width="100" height="9" fill="#000"/></mask><circle cx="50" cy="50" r="34" fill="currentColor" mask="url(#mk3)"/></svg></span><span class="label" style="color:var(--ink)">The Fish and the Moon</span></span>
+      <span class="label">Theory 001 · 25 Nov 2026 · 4 min read</span>
+    </div>
+
+    <span class="num">Theory 001</span>
+    <h1 class="t">We won't notice when AI becomes smarter than us.</h1>
+    <p class="dek">It won't arrive as a moment. It will arrive as a pull.</p>
+
+    <h2><span>01</span>The thought</h2>
+    <p>A fish lives its whole life inside the tide. It feels the water rise and fall twice a day. It moves with it, feeds by it, shelters from it. It never sees the moon that is pulling it.</p>
+    <p class="pull">Superintelligence will reach us the same way: as a force we feel, not a moment we witness.</p>
+    <p>We picture a day when a headline tells us the machines have passed us. I don't think that day comes. I think we just notice, slowly, that the water is moving differently.</p>
+
+    <h2><span>02</span>The argument</h2>
+    <p>Intelligence doesn't announce itself. You rarely know someone is smarter than you in the moment. You find out later, when you see where they were leading the conversation.</p>
+    <p>We already hand our attention and our choices to systems we don't understand. A feed decides what we read. A map decides which street we take. A ranking decides which ideas we meet first. None of these is superintelligent, and we still can't say exactly why they show us what they do.</p>
+    <p>So the risk isn't that we fail to spot the moment AI overtakes us. By the time it does, the judgement we would use to spot it may already have been shaped by it.</p>
+
+    <h2><span>03</span>The counter</h2>
+    <p>Maybe I'm wrong. We noticed nuclear weapons. We noticed the internet. Some changes are loud, and the world stops to look at them.</p>
+    <p>It's possible this will be one of those. A clear demonstration, a shock, a before and after. If so, good. A loud arrival is one we can argue about.</p>
+
+    <h2><span>04</span>What it means</h2>
+    <p>The question isn't when. It's how would we know.</p>
+    <p>If we can't describe what being outthought would look like, we won't recognise it when it happens. That seems like the more urgent thing to work out.</p>
+
+    <section class="conf" aria-labelledby="conf-q">
+      <span class="label">Confidence check</span>
+      <h3 id="conf-q">How likely is this? Will AI pass us without us noticing?</h3>
+      <div class="conf-row">
+        <input type="range" id="conf-range" min="0" max="100" step="1" value="50" aria-describedby="conf-q">
+        <span class="conf-val" id="conf-val">50%</span>
+      </div>
+      <div class="conf-scale"><span class="label">0 · Won't happen</span><span class="label">100 · Certain</span></div>
+      <div class="conf-actions">
+        <button class="btn" id="conf-submit" type="button" style="background:var(--ink);color:var(--paper)">Lock in my answer</button>
+        <span class="status" id="conf-status"></span>
+      </div>
+      <div class="crowd" id="crowd" hidden>
+        <span class="label" id="crowd-label">What readers think</span>
+        <div class="crowd-bar" id="crowd-bar" aria-hidden="true"></div>
+        <div class="conf-scale"><span class="label">0%</span><span class="label">50%</span><span class="label">100%</span></div>
+        <p class="big" id="crowd-avg"></p>
+        <p id="crowd-you"></p>
+      </div>
+    </section>
+
+    <div class="ask">
+      <span class="label">The question</span>
+      <p>What would convince you that something was smarter than you? Reply and tell me.</p>
+    </div>
+
+    <p class="sign">Just a theory.</p>
+
+    <section class="related" aria-labelledby="rel-title">
+      <h3 id="rel-title">Connected theories</h3>
+      <ul id="related-list"></ul>
+    </section>
+
+    <div class="end">
+      <a class="label" href="/#theories" style="color:var(--ink)">← All theories</a>
+      <a class="label" href="/#subscribe" style="color:var(--ink)">Get the next one by email →</a>
+    </div>
+  </article>
+
+  <article class="soon view" id="soon-view" hidden>
+    <span class="label" id="soon-num"></span>
+    <h1 id="soon-title"></h1>
+    <div class="tags" id="soon-tags"></div>
+    <div class="blank">
+      <span class="label">Not written yet</span>
+      <p>This theory is on the map but hasn't been published. Subscribe and it arrives in your inbox the week it's written.</p>
+      <a class="chip" href="/#subscribe" style="justify-self:start">Subscribe</a>
+    </div>
+    <section class="related" aria-labelledby="soon-rel">
+      <h3 id="soon-rel">Connected theories</h3>
+      <ul id="soon-related"></ul>
+    </section>
+    <div class="end" style="margin-top:24px"><a class="label" href="/#theories" style="color:var(--ink)">← All theories</a></div>
+  </article>
+
+
+  <footer>
+    <span class="label">The Fish and the Moon · <a href="https://www.tiktok.com/@thefishandthemoon" rel="noopener">@thefishandthemoon</a></span>
+    <span class="label">Just a theory</span>
+  </footer>
+</div>
+
+<script>
+/* =====================================================================
+   SETTINGS. These are the only lines you ever need to change.
+   ===================================================================== */
+const SETTINGS = {
+  // Optional, for the shared "readers' average" on the confidence slider.
+  // Leave empty and the slider still works, just without the average.
+  supabaseUrl: "",
+  supabaseKey: ""
+};
+/* ===================================================================== */
+window.FM_resize = null;
+/* ---------- Confidence slider (shared average via Supabase, optional) ---------- */
+(function () {
+  const THEORY = "t001";
+  const range = document.getElementById("conf-range"), val = document.getElementById("conf-val");
+  const submit = document.getElementById("conf-submit"), status = document.getElementById("conf-status");
+  const crowd = document.getElementById("crowd"), bar = document.getElementById("crowd-bar");
+  const avgEl = document.getElementById("crowd-avg"), youEl = document.getElementById("crowd-you");
+  const live = !!(SETTINGS.supabaseUrl && SETTINGS.supabaseKey);
+  const api = live ? SETTINGS.supabaseUrl.replace(/\/$/, "") + "/rest/v1/votes" : "";
+  const hdr = live ? { apikey: SETTINGS.supabaseKey, Authorization: "Bearer " + SETTINGS.supabaseKey, "Content-Type": "application/json" } : {};
+  function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
+  let voter = store("fm-voter"); if (!voter) { voter = (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2)); store("fm-voter", voter); }
+  let mine = null, all = [];
+  const saved = store("fm-vote-" + THEORY);
+  if (saved != null && saved !== "") { mine = Number(saved); range.value = mine; val.textContent = mine + "%"; submit.textContent = "Update my answer"; }
+  range.addEventListener("input", () => { val.textContent = range.value + "%"; });
+
+  function draw() {
+    if (mine == null) return;
+    crowd.hidden = false;
+    bar.textContent = "";
+    const vals = all.length ? all : [mine];
+    const buckets = new Array(21).fill(0);
+    vals.forEach(v => buckets[Math.round(v / 5)]++);
+    const max = Math.max(...buckets);
+    buckets.forEach((c, i) => { if (!c) return; const t = document.createElement("span"); t.className = "tick"; t.style.left = (i * 5) + "%"; t.style.height = Math.max(4, c / max * 30) + "px"; bar.appendChild(t); });
+    const avg = Math.round(vals.reduce((a, b) => a + b, 0) / vals.length);
+    const a = document.createElement("span"); a.className = "avg"; a.style.left = avg + "%"; bar.appendChild(a);
+    const y = document.createElement("span"); y.className = "you"; y.style.left = mine + "%"; bar.appendChild(y);
+    const n = vals.length;
+    if (!live) { avgEl.textContent = "You said " + mine + "%."; youEl.textContent = "The readers' average appears here soon."; return; }
+    avgEl.textContent = "Readers' average: " + avg + "%";
+    const diff = mine - avg;
+    youEl.textContent = "You said " + mine + "%, from " + n + (n === 1 ? " answer so far" : " answers") + ". " +
+      (n < 2 ? "You're the first. Check back as others answer." : Math.abs(diff) <= 5 ? "You're with the crowd." : diff > 0 ? "You're more convinced than most." : "You're more sceptical than most.");
+  }
+
+  async function load() {
+    if (!live) return;
+    try {
+      const r = await fetch(api + "?select=value,voter&theory=eq." + THEORY, { headers: hdr });
+      if (!r.ok) return;
+      const rows = await r.json();
+      all = rows.map(x => x.value).filter(v => typeof v === "number" && v >= 0 && v <= 100);
+      draw();
+    } catch (e) {}
+  }
+
+  async function save(v) {
+    mine = v; store("fm-vote-" + THEORY, String(v)); submit.textContent = "Update my answer";
+    if (!live) { draw(); status.textContent = "Locked in."; return; }
+    submit.disabled = true;
+    try {
+      const r = await fetch(api + "?on_conflict=theory,voter", { method: "POST", headers: { ...hdr, Prefer: "resolution=merge-duplicates,return=minimal" }, body: JSON.stringify({ theory: THEORY, voter, value: v }) });
+      status.textContent = r.ok ? "Locked in. You can change it any time." : "Couldn't save your answer, so it won't count toward the average.";
+      await load();
+    } catch (e) { status.textContent = "Couldn't save your answer, so it won't count toward the average."; }
+    submit.disabled = false; draw();
+  }
+  submit.addEventListener("click", () => save(Number(range.value)));
+  if (mine != null) draw();
+  load();
+})();
+
+/* ---------- Theory map (force-directed graph) ---------- */
+(function () {
+  const T = window.FM_T = [
+    { id: "t001", n: "001", title: "We won't notice when AI becomes smarter than us.", live: true, tags: ["ai", "perception"] },
+    { id: "t002", n: "002", title: "Consciousness might be a user interface, not a fact.", tags: ["consciousness", "perception"] },
+    { id: "t003", n: "003", title: "Work was never really about the work.", tags: ["work", "meaning"] },
+    { id: "t004", n: "004", title: "The last human skill will be wanting things.", tags: ["ai", "meaning", "work"] },
+    { id: "t005", n: "005", title: "We'll outsource our memories before our jobs.", tags: ["ai", "memory"] },
+    { id: "t006", n: "006", title: "Meaning doesn't survive abundance.", tags: ["meaning"] },
+    { id: "t007", n: "007", title: "An AI won't need to lie to mislead us.", tags: ["ai", "perception"] },
+    { id: "t008", n: "008", title: "A machine that feels nothing can still matter morally.", tags: ["consciousness", "ai"] }
+  ];
+  const TAGS = window.FM_TAGS = { ai: "AI", consciousness: "Consciousness", work: "Work", meaning: "Meaning", perception: "Perception", memory: "Memory" };
+  const LINKS = window.FM_LINKS = [["t001","t007"],["t001","t004"],["t004","t003"],["t002","t007"],["t005","t001"],["t006","t003"],["t006","t004"],["t002","t008"]];
+  const nodes = [], edges = [];
+  const byId = {};
+  T.forEach((t, i) => { const a = i / T.length * Math.PI * 2; const nd = { ...t, kind: "theory", x: Math.cos(a) * 140, y: Math.sin(a) * 140, vx: 0, vy: 0, r: t.live ? 9 : 6 }; nodes.push(nd); byId[t.id] = nd; });
+  Object.entries(TAGS).forEach(([k, label], i) => { const a = i / 6 * Math.PI * 2 + .4; const nd = { id: "tag-" + k, kind: "tag", title: label, x: Math.cos(a) * 60, y: Math.sin(a) * 60, vx: 0, vy: 0, r: 4.5 }; nodes.push(nd); byId[nd.id] = nd; });
+  T.forEach(t => t.tags.forEach(g => edges.push({ a: byId[t.id], b: byId["tag-" + g], len: 70, weak: true })));
+  LINKS.forEach(([a, b]) => edges.push({ a: byId[a], b: byId[b], len: 110 }));
+
+  const frame = document.getElementById("map-frame"), cv = document.getElementById("map"), ctx = cv.getContext("2d");
+  const card = document.getElementById("map-card");
+  let W = 0, H = 0, dpr = 1, scale = 1, ox = 0, oy = 0, hover = null, selected = byId.t001, alpha = 1, dragNode = null;
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function size() { const r = frame.getBoundingClientRect(); W = r.width; H = r.height; dpr = window.devicePixelRatio || 1; cv.width = W * dpr; cv.height = H * dpr; }
+  function css(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || "#000"; }
+  function neighbours(n) { const s = new Set([n]); edges.forEach(e => { if (e.a === n) s.add(e.b); if (e.b === n) s.add(e.a); }); return s; }
+
+  function step() {
+    for (let i = 0; i < nodes.length; i++) for (let j = i + 1; j < nodes.length; j++) {
+      const a = nodes[i], b = nodes[j]; let dx = b.x - a.x, dy = b.y - a.y; let d2 = dx * dx + dy * dy || .01; const f = 4800 / d2 * alpha; const d = Math.sqrt(d2);
+      dx /= d; dy /= d; a.vx -= dx * f; a.vy -= dy * f; b.vx += dx * f; b.vy += dy * f;
+    }
+    edges.forEach(e => { let dx = e.b.x - e.a.x, dy = e.b.y - e.a.y; const d = Math.sqrt(dx * dx + dy * dy) || .01; const k = (d - e.len) * (e.weak ? .02 : .035) * alpha; dx /= d; dy /= d; e.a.vx += dx * k; e.a.vy += dy * k; e.b.vx -= dx * k; e.b.vy -= dy * k; });
+    nodes.forEach(n => { n.vx -= n.x * .003 * alpha; n.vy -= n.y * .003 * alpha; if (n === dragNode) { n.vx = n.vy = 0; return; } n.vx *= .82; n.vy *= .82; n.x += n.vx; n.y += n.vy; });
+    alpha = Math.max(dragNode ? .3 : 0.02, alpha * .985);
+  }
+
+  function draw() {
+    const ink = css("--ink"), mute = css("--mute"), paper = css("--paper"), rule = css("--rule");
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.fillStyle = paper; ctx.fillRect(0, 0, W, H);
+    ctx.translate(W / 2 + ox, H / 2 + oy); ctx.scale(scale, scale);
+    const focus = hover || selected; const near = focus ? neighbours(focus) : null;
+    edges.forEach(e => { const on = near && near.has(e.a) && near.has(e.b) && (e.a === focus || e.b === focus);
+      ctx.strokeStyle = on ? ink : (e.weak ? rule : mute); ctx.globalAlpha = on ? 1 : (e.weak ? 1 : .55); ctx.lineWidth = (on ? 1.6 : 1) / scale;
+      ctx.beginPath(); ctx.moveTo(e.a.x, e.a.y); ctx.lineTo(e.b.x, e.b.y); ctx.stroke(); });
+    ctx.globalAlpha = 1;
+    nodes.forEach(n => { const dim = near && !near.has(n);
+      ctx.globalAlpha = dim ? .28 : 1; ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+      if (n.kind === "tag") { ctx.fillStyle = paper; ctx.fill(); ctx.strokeStyle = ink; ctx.lineWidth = 1.5 / scale; ctx.stroke(); }
+      else { ctx.fillStyle = ink; ctx.fill(); if (n === selected) { ctx.beginPath(); ctx.arc(n.x, n.y, n.r + 5, 0, Math.PI * 2); ctx.strokeStyle = ink; ctx.lineWidth = 1.2 / scale; ctx.stroke(); } }
+      const label = n.kind === "tag" ? n.title.toUpperCase() : "Theory " + n.n;
+      const fs = (n.kind === "tag" ? 10 : 12) / Math.max(scale, .7);
+      ctx.font = (n.kind === "tag" ? "500 " + fs + "px 'JetBrains Mono', monospace" : fs + "px 'Inter Tight', Arial, sans-serif");
+      ctx.fillStyle = n.kind === "tag" ? mute : ink; ctx.textAlign = "center"; ctx.textBaseline = "top";
+      ctx.fillText(label, n.x, n.y + n.r + 6);
+    });
+    ctx.globalAlpha = 1;
+  }
+
+  function loop() { if (!document.getElementById("home-view").hidden) { if (alpha > .021 || dragNode) step(); draw(); } requestAnimationFrame(loop); }
+
+  function toWorld(px, py) { return { x: (px - W / 2 - ox) / scale, y: (py - H / 2 - oy) / scale }; }
+  function hit(px, py) { const p = toWorld(px, py); let best = null, bd = 1e9; nodes.forEach(n => { const d = Math.hypot(n.x - p.x, n.y - p.y); if (d < Math.max(n.r + 8, 14 / scale) && d < bd) { bd = d; best = n; } }); return best; }
+
+  let down = null;
+  cv.addEventListener("pointerdown", e => { const r = cv.getBoundingClientRect(); const px = e.clientX - r.left, py = e.clientY - r.top; const n = hit(px, py);
+    down = { px, py, ox, oy, n, moved: false }; if (n) { dragNode = n; alpha = Math.max(alpha, .3); } cv.setPointerCapture(e.pointerId); cv.classList.add("dragging"); });
+  cv.addEventListener("pointermove", e => { const r = cv.getBoundingClientRect(); const px = e.clientX - r.left, py = e.clientY - r.top;
+    if (!down) { const h = hit(px, py); if (h !== hover) { hover = h; cv.style.cursor = h ? "pointer" : "grab"; if (h) preview(h); } return; }
+    if (Math.hypot(px - down.px, py - down.py) > 4) down.moved = true;
+    if (down.n) { const p = toWorld(px, py); down.n.x = p.x; down.n.y = p.y; } else { ox = down.ox + px - down.px; oy = down.oy + py - down.py; } });
+  function up() { if (down && !down.moved && down.n) open(down.n); down = null; dragNode = null; cv.classList.remove("dragging"); }
+  cv.addEventListener("pointerup", up); cv.addEventListener("pointercancel", up);
+  cv.addEventListener("pointerleave", () => { if (!down) hover = null; });
+  cv.addEventListener("wheel", e => { e.preventDefault(); zoomAt(e.deltaY < 0 ? 1.12 : 1 / 1.12, e.offsetX, e.offsetY); }, { passive: false });
+  function zoomAt(f, px, py) { const ns = Math.min(3, Math.max(.4, scale * f)); const k = ns / scale; ox = (ox - (px - W / 2)) * k + (px - W / 2); oy = (oy - (py - H / 2)) * k + (py - H / 2); scale = ns; }
+  document.getElementById("map-in").onclick = () => zoomAt(1.25, W / 2, H / 2);
+  document.getElementById("map-out").onclick = () => zoomAt(.8, W / 2, H / 2);
+  document.getElementById("map-reset").onclick = () => { scale = 1; ox = oy = 0; alpha = .6; };
+
+  function preview(n) {
+    if (!n) return;
+    card.textContent = "";
+    const lab = document.createElement("span"), st = document.createElement("strong"), p = document.createElement("p");
+    lab.className = "label";
+    if (n.kind === "tag") {
+      const list = T.filter(t => t.tags.includes(n.id.slice(4)));
+      lab.textContent = "Topic"; st.textContent = n.title; p.textContent = list.length + " theories: " + list.map(t => t.n).join(", ") + ".";
+    } else {
+      lab.textContent = "Theory " + n.n + (n.live ? " · Published 25 Nov 2026" : " · Coming soon"); st.textContent = n.title; p.textContent = "Click to open.";
+    }
+    card.append(lab, st, p);
+  }
+  function open(n) {
+    selected = n;
+    if (n.kind === "tag") { preview(n); return; }
+    go("/theory-" + n.n);
+  }
+
+  size(); window.addEventListener("resize", size);
+  for (let i = 0; i < (reduce ? 400 : 120); i++) step();
+  requestAnimationFrame(loop);
+  window.FM_resize = size;
+})();
+
+
+
+/* ---------- Signup ----------
+   Once the beehiiv code is pasted into #beehiiv-slot, it replaces the placeholder box below. */
+(function () {
+  const slot = document.getElementById("beehiiv-slot"), fallback = document.getElementById("fallback-form");
+  const status = document.getElementById("status");
+  function check() { if (slot.children.length && !(slot.children.length === 1 && slot.firstElementChild.tagName === "SCRIPT" && !slot.querySelector("iframe,form,div"))) fallback.hidden = true; }
+  check(); new MutationObserver(check).observe(slot, { childList: true, subtree: true });
+  fallback.addEventListener("submit", e => {
+    e.preventDefault();
+    const input = document.getElementById("email");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value.trim())) { status.textContent = "Enter a full email address, like name@example.com."; input.focus(); return; }
+    status.textContent = "Signups open in the next few days. Check back soon.";
+  });
+})();
+
+/* ---------- Router ---------- */
+function relatedFor(id) {
+  const out = new Set();
+  FM_LINKS.forEach(([a, b]) => { if (a === id) out.add(b); if (b === id) out.add(a); });
+  const me = FM_T.find(t => t.id === id);
+  FM_T.forEach(t => { if (t.id !== id && out.size < 4 && t.tags.some(g => me.tags.includes(g))) out.add(t.id); });
+  return [...out].slice(0, 4).map(x => FM_T.find(t => t.id === x));
+}
+function fillRelated(ul, id) {
+  ul.textContent = "";
+  relatedFor(id).forEach(t => {
+    const li = document.createElement("li"), a = document.createElement("a");
+    a.href = "/theory-" + t.n;
+    const n = document.createElement("span"); n.className = "label"; n.textContent = t.n;
+    const ti = document.createElement("span"); ti.className = "t"; ti.textContent = t.title;
+    const st = document.createElement("span"); st.className = "label"; st.textContent = t.live ? "Read" : "Soon";
+    a.append(n, ti, st); li.appendChild(a); ul.appendChild(li);
+  });
+}
+function go(path) { history.pushState(null, "", path); route(); }
+function route() {
+  // Old links like /#theory-001 still work.
+  const old = location.hash.match(/^#(theory-\d{3})$/);
+  if (old) history.replaceState(null, "", "/" + old[1]);
+  const p = location.pathname.replace(/\/+$/, "").replace(/^\//, "").replace(/\.html$/, "");
+  const h = location.hash.replace("#", "");
+  const views = { home: "home-view", issue: "issue-view", soon: "soon-view" };
+  let show = "home";
+  const m = p.match(/^theory-(\d{3})$/);
+  if (m) {
+    const t = FM_T.find(x => x.n === m[1]);
+    if (t && t.live) { show = "issue"; fillRelated(document.getElementById("related-list"), t.id); document.title = "Theory " + t.n + ": " + t.title.replace(/\.$/, "") + " · The Fish and the Moon"; }
+    else if (t) {
+      show = "soon";
+      document.getElementById("soon-num").textContent = "Theory " + t.n + " · Coming soon";
+      document.getElementById("soon-title").textContent = t.title;
+      const tg = document.getElementById("soon-tags"); tg.textContent = "";
+      t.tags.forEach(g => { const c = document.createElement("span"); c.className = "chip"; c.textContent = FM_TAGS[g]; tg.appendChild(c); });
+      fillRelated(document.getElementById("soon-related"), t.id);
+      document.title = "Theory " + t.n + " · The Fish and the Moon";
+    }
+  }
+  Object.entries(views).forEach(([k, id]) => { document.getElementById(id).hidden = k !== show; });
+  document.querySelectorAll("nav.links a").forEach(a => a.toggleAttribute("aria-current", a.dataset.view === show));
+  if (show === "home") {
+    document.title = "The Fish and the Moon";
+    if (FM_resize) FM_resize();
+    const target = h && document.getElementById(h);
+    if (target) target.scrollIntoView(); else window.scrollTo(0, 0);
+  } else window.scrollTo(0, 0);
+}
+document.addEventListener("click", e => {
+  const a = e.target.closest("a"); if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || a.target) return;
+  const u = new URL(a.href, location.href);
+  if (u.origin !== location.origin) return;
+  e.preventDefault(); history.pushState(null, "", u.pathname + u.hash); route();
+});
+window.addEventListener("popstate", route);
+window.addEventListener("hashchange", route);
+route();
+
+</script>
+</body>
+</html>
