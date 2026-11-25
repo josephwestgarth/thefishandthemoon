@@ -269,15 +269,15 @@ footer a { color: inherit; text-decoration: none; }
 footer a:hover { color: var(--ink); }
 
 /* ---------- Waiting room: the watcher (shown until Theory 001 is published) ---------- */
-.watcher { --w-bg: #ffffff; --w-ink: #0b0b0c; --w-mute: #6b6b70; --w-dot: #d6d6da;
-  border: 1px solid var(--w-ink); background-color: var(--w-bg); color: var(--w-ink);
-  background-image: radial-gradient(var(--w-dot) 1px, transparent 1.2px); background-size: 36px 36px; background-position: 18px 18px;
+.watcher { --w-ink: #0b0b0c; --w-mute: #6b6b70;
+  border: 1px solid var(--w-ink); background: transparent; color: var(--w-ink);
   display: grid; justify-items: center; align-content: center; gap: 28px; min-height: 520px; padding: 56px 20px; text-align: center; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
 .eye { width: 168px; height: 168px; cursor: pointer; color: var(--w-ink); border-radius: 50%; -webkit-tap-highlight-color: transparent; }
 .eye:focus-visible { outline: 2px solid var(--w-ink); outline-offset: 6px; }
 .eye svg { width: 100%; height: 100%; display: block; overflow: visible; }
-#eye-lid { transform-box: fill-box; transform-origin: center; transition: transform .09s ease-in; }
-#eye-lid.shut { transform: scaleY(.06); }
+#lash { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
+/* Halftone: a fixed layer of dots behind everything, drawn once per screen size. */
+#halftone { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
 .w-copy { display: grid; gap: 12px; justify-items: center; max-width: 44ch; }
 .w-copy .label { color: var(--w-mute); }
 .w-copy h3 { font-family: var(--display); font-weight: 400; font-size: clamp(26px, 3.6vw, 36px); line-height: 1.15; letter-spacing: -.015em; margin: 0; min-height: 1.15em; text-wrap: balance; }
@@ -291,11 +291,11 @@ footer a:hover { color: var(--ink); }
 .moon-page .full { width: 120px; height: 120px; color: var(--ink); }
 .moon-page h1 { font-size: clamp(32px, 5.4vw, 52px); text-transform: none; line-height: 1.08; letter-spacing: -.025em; text-wrap: balance; }
 .moon-page p { margin: 0; color: var(--mute); max-width: 46ch; }
-@media (prefers-reduced-motion: reduce) { #eye-lid { transition: none; animation: none; } }
 </style>
 </head>
 <body>
 
+<canvas id="halftone" aria-hidden="true"></canvas>
 <div class="wrap">
   <header class="top">
     <a class="mini" href="/"><span aria-hidden="true"><svg viewBox="0 0 100 100"><mask id="mk1"><circle cx="50" cy="50" r="34" fill="#fff"/><rect x="0" y="37" width="100" height="9" fill="#000"/></mask><circle cx="50" cy="50" r="34" fill="currentColor" mask="url(#mk1)"/></svg></span>The Fish and the Moon</a>
@@ -332,7 +332,7 @@ footer a:hover { color: var(--ink); }
     <section class="home-map" id="theories">
       <div class="watcher" id="watcher">
         <div class="eye" id="eye" role="button" tabindex="0" aria-label="The watcher. Press it.">
-          <svg viewBox="0 0 100 100" aria-hidden="true"><defs><mask id="mk-eye"><circle cx="50" cy="50" r="34" fill="#fff"/><rect id="eye-slot" x="0" y="37" width="100" height="9" fill="#000"/></mask></defs><g id="eye-lid"><circle cx="50" cy="50" r="34" fill="currentColor" mask="url(#mk-eye)"/></g></svg>
+          <svg viewBox="0 0 100 100" aria-hidden="true"><defs><mask id="mk-eye"><circle cx="50" cy="50" r="34" fill="#fff"/><rect id="eye-slot" x="0" y="37" width="100" height="9" fill="#000"/><ellipse id="lid-top" cx="50" cy="-34" rx="74" ry="40" fill="#000"/><ellipse id="lid-bot" cx="50" cy="134" rx="74" ry="40" fill="#000"/></mask></defs><circle cx="50" cy="50" r="34" fill="currentColor" mask="url(#mk-eye)"/><path id="lash" d="M16 60 Q50 66 84 60" opacity="0"/></svg>
         </div>
         <div class="w-copy">
           <span class="label" id="w-status">Status · Observing</span>
@@ -671,7 +671,8 @@ if (!SETTINGS.published) {
 
 /* ---------- The watcher ---------- */
 (function () {
-  const eye = document.getElementById("eye"), slot = document.getElementById("eye-slot"), lid = document.getElementById("eye-lid");
+  const eye = document.getElementById("eye"), slot = document.getElementById("eye-slot");
+  const lidTop = document.getElementById("lid-top"), lidBot = document.getElementById("lid-bot"), lash = document.getElementById("lash");
   const status = document.getElementById("w-status"), line = document.getElementById("w-line"), sub = document.getElementById("w-sub");
   if (!eye) return;
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -689,17 +690,80 @@ if (!SETTINGS.published) {
   }
   document.addEventListener("pointermove", e => aim(e.clientX, e.clientY), { passive: true });
   document.addEventListener("pointerdown", e => aim(e.clientX, e.clientY), { passive: true });
-  function blink(ms) { lid.classList.add("shut"); setTimeout(() => lid.classList.remove("shut"), ms || 140); }
-  function poke() { line.textContent = lines[clicks % lines.length]; clicks++; blink(160); }
+  /* Eyelids. c = 0 open, 1 shut. Lids meet a little below centre, the upper lid travels most,
+     the close is fast and the open is slower, like a real blink. */
+  const MEET = 60, TOP_OPEN = 6, BOT_OPEN = 94;
+  let blinks = [];           // queued blink shapes: { start, close, hold, open, depth }
+  const easeIn = t => t * t * t, easeOut = t => 1 - Math.pow(1 - t, 3);
+  function blink(depth, delay) {
+    const now = performance.now() + (delay || 0);
+    blinks.push({ start: now, close: 70 + Math.random() * 30, hold: 25 + Math.random() * 45, open: 150 + Math.random() * 90, depth: depth || 1 });
+  }
+  function closure(now) {
+    let c = 0;
+    blinks = blinks.filter(b => now < b.start + b.close + b.hold + b.open);
+    blinks.forEach(b => {
+      const t = now - b.start; let v = 0;
+      if (t < 0) v = 0;
+      else if (t < b.close) v = easeIn(t / b.close);
+      else if (t < b.close + b.hold) v = 1;
+      else v = 1 - easeOut((t - b.close - b.hold) / b.open);
+      c = Math.max(c, v * b.depth);
+    });
+    return c;
+  }
+  function poke() { line.textContent = lines[clicks % lines.length]; clicks++; blink(1); }
   eye.addEventListener("click", poke);
   eye.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); poke(); } });
-  (function idle() { setTimeout(() => { if (!document.hidden) blink(); idle(); }, 2600 + Math.random() * 4200); })();
+  (function idle() {
+    // Irregular gaps, sometimes a double blink, now and then a lazy half blink.
+    const gap = 1800 + Math.random() * 3200 + (Math.random() < .25 ? Math.random() * 4000 : 0);
+    setTimeout(() => {
+      if (!document.hidden && !reduce) {
+        const r = Math.random();
+        if (r < .18) { blink(1); blink(1, 330 + Math.random() * 120); }
+        else if (r < .28) blink(.55 + Math.random() * .2);
+        else blink(1);
+      }
+      idle();
+    }, gap);
+  })();
   function frame() {
     y += (ty - y) * (reduce ? 1 : .12); hgt += (th - hgt) * (reduce ? 1 : .2);
     slot.setAttribute("y", (y + 4.5 - hgt / 2).toFixed(2)); slot.setAttribute("height", hgt.toFixed(2));
+    const c = Math.max(closure(performance.now()), near ? .14 : 0);
+    const topEdge = TOP_OPEN + c * (MEET - TOP_OPEN), botEdge = BOT_OPEN - c * (BOT_OPEN - MEET);
+    lidTop.setAttribute("cy", (topEdge - 40).toFixed(2)); lidBot.setAttribute("cy", (botEdge + 40).toFixed(2));
+    lash.setAttribute("opacity", Math.max(0, (c - .82) / .18).toFixed(2));
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
+})();
+
+
+/* ---------- Halftone gradient across the page ---------- */
+(function () {
+  const cv = document.getElementById("halftone"); if (!cv) return;
+  function draw() {
+    const w = innerWidth, h = innerHeight, d = Math.min(2, devicePixelRatio || 1);
+    cv.width = w * d; cv.height = h * d;
+    const c = cv.getContext("2d"); c.setTransform(d, 0, 0, d, 0, 0); c.clearRect(0, 0, w, h);
+    c.fillStyle = "#0b0b0c"; c.globalAlpha = .2;
+    const step = 8, maxR = step * .46, diag = Math.hypot(w, h);
+    for (let y = 0; y < h + step; y += step) {
+      const row = Math.round(y / step);
+      for (let x = (row % 2) * step / 2; x < w + step; x += step) {
+        // Strongest in the bottom-right corner, fading out across the page.
+        const t = 1 - Math.hypot(w - x, h - y) / (diag * .7);
+        if (t <= 0) continue;
+        const r = maxR * Math.pow(t, 1.8);
+        if (r < .35) continue;
+        c.beginPath(); c.arc(x, y, r, 0, Math.PI * 2); c.fill();
+      }
+    }
+  }
+  let timer; addEventListener("resize", () => { clearTimeout(timer); timer = setTimeout(draw, 120); });
+  draw();
 })();
 
 /* ---------- Hidden page: type "moon" anywhere, or tap the small logo 5 times ---------- */
