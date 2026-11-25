@@ -13,7 +13,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="The Fish and the Moon">
 <meta name="twitter:description" content="Ideas before they're obvious. A weekly letter on intelligence, meaning and the future we're building.">
-<meta name="theme-color" content="#0b0b0c">
+<meta name="theme-color" content="#ffffff">
+<meta name="color-scheme" content="light only">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,7 +24,8 @@
 /* Font: Inter Tight (free, Google Fonts) stands in for Alliance No.2, which needs a paid web licence. */
 /* Layout: a live site in one stark column. Home = mark, one line, signup, theory map as centrepiece. Theory pages = essay column. Email = mock inbox preview. */
 :root {
-  --paper: #fafafa;
+  --paper: #ffffff;
+  color-scheme: light;
   --ink: #0b0b0c;
   --mute: #6b6b70;
   --rule: #dcdcdf;
@@ -32,10 +34,7 @@
   --body: "Inter Tight", "Helvetica Neue", Arial, sans-serif;
   --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) { --paper: #0a0a0b; --ink: #f2f2f3; --mute: #8e8e94; --rule: #26262a; --panel: #141416; color-scheme: dark; }
-}
-:root[data-theme="dark"] { --paper: #0a0a0b; --ink: #f2f2f3; --mute: #8e8e94; --rule: #26262a; --panel: #141416; color-scheme: dark; }
+/* Always white: the site ignores the device's dark mode on purpose. */
 
 * { box-sizing: border-box; }
 body {
@@ -270,11 +269,10 @@ footer a { color: inherit; text-decoration: none; }
 footer a:hover { color: var(--ink); }
 
 /* ---------- Waiting room: the watcher (shown until Theory 001 is published) ---------- */
-.watcher { --w-bg: #fafafa; --w-ink: #0b0b0c; --w-mute: #6b6b70; --w-dot: #d6d6da;
+.watcher { --w-bg: #ffffff; --w-ink: #0b0b0c; --w-mute: #6b6b70; --w-dot: #d6d6da;
   border: 1px solid var(--w-ink); background-color: var(--w-bg); color: var(--w-ink);
   background-image: radial-gradient(var(--w-dot) 1px, transparent 1.2px); background-size: 36px 36px; background-position: 18px 18px;
   display: grid; justify-items: center; align-content: center; gap: 28px; min-height: 520px; padding: 56px 20px; text-align: center; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
-.night .watcher { --w-bg: #050506; --w-ink: #f2f2f3; --w-mute: #84848b; --w-dot: #1d1d21; }
 .eye { width: 168px; height: 168px; cursor: pointer; color: var(--w-ink); border-radius: 50%; -webkit-tap-highlight-color: transparent; }
 .eye:focus-visible { outline: 2px solid var(--w-ink); outline-offset: 6px; }
 .eye svg { width: 100%; height: 100%; display: block; overflow: visible; }
@@ -288,21 +286,12 @@ footer a:hover { color: var(--ink); }
 .w-chip:hover { background: var(--w-ink); color: var(--w-bg); }
 @media (max-width: 520px) { .watcher { min-height: 460px; } .eye { width: 140px; height: 140px; } }
 
-/* ---------- Title unlock ---------- */
-.unlock { display: grid; gap: 12px; padding: 22px 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--rule); margin-top: 28px; }
-.unlock .t { font-family: var(--display); font-size: clamp(22px, 2.8vw, 30px); line-height: 1.35; margin: 0; display: flex; flex-wrap: wrap; gap: .1em .32em; }
-.unlock .bar { background: var(--ink); color: transparent; border-radius: 1px; }
-.unlock .w { animation: surface .9s ease both; }
-@keyframes surface { from { opacity: 0; filter: blur(6px); } to { opacity: 1; filter: none; } }
-.unlock-meter { height: 2px; background: var(--rule); position: relative; }
-.unlock-meter i { position: absolute; inset: 0 auto 0 0; background: var(--ink); }
-
 /* ---------- Hidden page ---------- */
 .moon-page { max-width: 640px; margin: 0 auto; padding-block: 96px 120px; display: grid; gap: 26px; justify-items: start; }
 .moon-page .full { width: 120px; height: 120px; color: var(--ink); }
 .moon-page h1 { font-size: clamp(32px, 5.4vw, 52px); text-transform: none; line-height: 1.08; letter-spacing: -.025em; text-wrap: balance; }
 .moon-page p { margin: 0; color: var(--mute); max-width: 46ch; }
-@media (prefers-reduced-motion: reduce) { #eye-lid, .unlock .w { transition: none; animation: none; } }
+@media (prefers-reduced-motion: reduce) { #eye-lid { transition: none; animation: none; } }
 </style>
 </head>
 <body>
@@ -351,12 +340,6 @@ footer a:hover { color: var(--ink); }
           <p id="w-sub">Theory 001 is coming. Click the eye.</p>
           <a class="w-chip" href="/#subscribe">Be told first</a>
         </div>
-      </div>
-      <div class="unlock" id="unlock">
-        <span class="label" id="unlock-label">Theory 001 · Title locked</span>
-        <p class="t" id="unlock-title"></p>
-        <div class="unlock-meter" aria-hidden="true"><i id="unlock-fill"></i></div>
-        <span class="label" id="unlock-note"></span>
       </div>
       <section class="map" aria-labelledby="map-title">
         <div class="map-head">
@@ -492,10 +475,6 @@ const SETTINGS = {
   // false = the waiting room (the watcher) shows and Theory 001 stays hidden.
   // true  = Theory 001, the theory map and the "Latest" link go live.
   published: false,
-
-  // Your Beehiiv subscriber count. One word of Theory 001's title unlocks per 25.
-  subscribers: 0,
-  wordsPer: 25,
 
   // Optional, for the shared "readers' average" on the confidence slider.
   // Leave empty and the slider still works, just without the average.
@@ -679,7 +658,7 @@ const NIGHT = (function () {
   if (q !== null) return q !== "0";
   return new Date().getHours() < 5;
 })();
-if (NIGHT) { document.documentElement.classList.add("night"); document.documentElement.setAttribute("data-theme", "dark"); }
+if (NIGHT) document.documentElement.classList.add("night");
 
 /* ---------- Pre-launch: hide everything that isn't published yet ---------- */
 if (!SETTINGS.published) {
@@ -688,7 +667,6 @@ if (!SETTINGS.published) {
   document.querySelector('nav.links a[data-view="issue"]').hidden = true;
 } else {
   document.getElementById("watcher").hidden = true;
-  document.getElementById("unlock").hidden = true;
 }
 
 /* ---------- The watcher ---------- */
@@ -722,24 +700,6 @@ if (!SETTINGS.published) {
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
-})();
-
-/* ---------- Title unlock: one word per SETTINGS.wordsPer subscribers ---------- */
-(function () {
-  const el = document.getElementById("unlock-title"); if (!el) return;
-  const words = atob("V2Ugd29uJ3Qgbm90aWNlIHdoZW4gQUkgYmVjb21lcyBzbWFydGVyIHRoYW4gdXMu").split(" ");
-  const per = SETTINGS.wordsPer || 25, open = Math.min(words.length, Math.floor((SETTINGS.subscribers || 0) / per));
-  words.forEach((w, i) => {
-    const sp = document.createElement("span");
-    if (i < open) { sp.className = "w"; sp.textContent = w; sp.style.animationDelay = (i * .12) + "s"; }
-    else { sp.className = "bar"; sp.textContent = "x".repeat(Math.max(2, w.length)); sp.setAttribute("aria-hidden", "true"); }
-    el.appendChild(sp);
-  });
-  el.setAttribute("aria-label", open ? words.slice(0, open).join(" ") + ", and " + (words.length - open) + " hidden words" : "Hidden title");
-  document.getElementById("unlock-fill").style.width = (open / words.length * 100) + "%";
-  document.getElementById("unlock-label").textContent = open === words.length ? "Theory 001 · Title unlocked" : "Theory 001 · Title locked";
-  document.getElementById("unlock-note").textContent = open === words.length ? "Every word is out. The theory itself comes next." :
-    open + " of " + words.length + " words unlocked · The next word appears at " + ((open + 1) * per) + " subscribers";
 })();
 
 /* ---------- Hidden page: type "moon" anywhere, or tap the small logo 5 times ---------- */
